@@ -1,0 +1,199 @@
+{
+  "scopeName": "source.pdf",
+  "name": "PDF",
+  "fileTypes": ["pdf"],
+  "firstLineMatch": "%PDF-\\d.\\d",
+  "patterns": [
+    {
+      "begin": "xref",
+      "beginCaptures": {
+        "0": {
+          "name": "keyword"
+        }
+      },
+      "end": "(?=trailer)",
+      "name": "meta.section.xref.pdf"
+    },
+    {
+      "begin": "trailer",
+      "beginCaptures": {
+        "0": {
+          "name": "keyword"
+        }
+      },
+      "end": "(?=startxref)",
+      "name": "meta.section.trailer.pdf",
+      "patterns": [
+        {
+          "include": "#dictionary"
+        }
+      ]
+    },
+    {
+      "begin": "startxref",
+      "beginCaptures": {
+        "0": {
+          "name": "keyword"
+        }
+      },
+      "end": "%%EOF",
+      "endCaptures": {
+        "0": {
+          "name": "keyword"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#number"
+        }
+      ]
+    },
+    {
+      "include": "#indirect_object"
+    },
+    {
+      "match": "^\\s*%.*$",
+      "name": "comment"
+    }
+  ],
+  "repository": {
+    "name": {
+      "match": "\\/[A-Za-z][^\\n\\r%\\(\\)\\<\\>\\[\\]\\{\\}\\s]*",
+      "name": "entity.other.attribute-name.pdf"
+    },
+    "string": {
+      "match": "\\(.*\\)",
+      "name": "string.pdf"
+    },
+    "boolean": {
+      "match": "true|false|null",
+      "name": "constant.language.pdf"
+    },
+    "number": {
+      "match": "-?\\d+(.\\d+)?",
+      "name": "constant.numeric.pdf"
+    },
+    "array": {
+      "begin": "\\[",
+      "end": "\\]",
+      "patterns": [
+        {
+          "include": "#object"
+        }
+      ],
+      "name": "meta.structure.array.pdf"
+    },
+    "dictionary": {
+      "begin": "<<",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.dictionary.begin.pdf"
+        }
+      },
+      "end": ">>",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.dictionary.end.pdf"
+        }
+      },
+      "name": "meta.structure.dictionary.pdf",
+      "patterns": [
+        {
+          "name": "meta.structure.dictionary.key.pdf",
+          "begin": "(?=\\/)",
+          "end": "(?=\\s|<)",
+          "patterns": [
+            {
+              "include": "#name"
+            }
+          ]
+        },
+        {
+          "name": "meta.structure.dictionary.value.pdf",
+          "begin": "(?=\\s|<)",
+          "end": "(?=\\/|>>)",
+          "patterns": [
+            {
+              "include": "#object"
+            }
+          ]
+        }
+      ]
+    },
+    "object": {
+      "patterns": [
+        {
+          "include": "#reference"
+        },
+        {
+          "include": "#name"
+        },
+        {
+          "include": "#string"
+        },
+        {
+          "include": "#boolean"
+        },
+        {
+          "include": "#number"
+        },
+        {
+          "include": "#array"
+        },
+        {
+          "include": "#dictionary"
+        },
+        {
+          "include": "#stream"
+        }
+      ]
+    },
+    "indirect_object": {
+      "begin": "\\d+\\s+\\d+\\s+(obj)",
+      "beginCaptures": {
+        "0": {
+          "name": "keyword.pdf"
+        }
+      },
+      "end": "endobj",
+      "endCaptures": {
+        "0": {
+          "name": "keyword.pdf"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#object"
+        }
+      ]
+    },
+    "reference": {
+      "match": "\\d+\\s+\\d+\\s+R",
+      "name": "keyword.pdf"
+    },
+    "stream": {
+      "begin": "stream",
+      "beginCaptures": {
+        "0": {
+          "name": "keyword.pdf"
+        }
+      },
+      "end": "endstream",
+      "endCaptures": {
+        "0": {
+          "name": "keyword.pdf"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#stream_text"
+        }
+      ]
+    },
+    "stream_text": {
+      "begin": "BT",
+      "end": "ET",
+      "name": "support.type.pdf"
+    }
+  }
+}
